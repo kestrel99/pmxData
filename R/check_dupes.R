@@ -7,6 +7,7 @@
 #' @param dv The dependent variable (defaults to "DV").
 #' @param mdv Missing variable identifier (defaults to "MDV").
 #' @param evid Event type identifier (defaults to "EVID").
+#' @param c Record censor identifier (defaults to \code{NULL}).
 #'
 #' @return A tibble containing duplicates.
 #'
@@ -26,15 +27,28 @@ check_dupes <- function(d,
                         idv = "TIME",
                         dv = "DV",
                         mdv = "MDV",
-                        evid = "EVID") {
+                        evid = "EVID",
+                        c = NULL) {
 
-  x <- d[,c(id,idv,dv, mdv, evid)]
-  out <- janitor::get_dupes(x)
-
-  if(nrow(out)>0) {
-    warning(paste(nrow(out), " identical combinations of ", id, ", ", idv, ", ", dv, ", ", mdv, ", ", evid, " found in this dataset.", sep=""))
+  if(is.null(c)) {
+    x <- d[,c(id,idv,dv, mdv, evid)]
+    out <- janitor::get_dupes(x)
   } else {
-    warning(paste("No identifical combinations of ", id, ", ", idv, ", ", dv, ", ", mdv, ", ", evid, " found in this dataset.", sep=""))
+    x <- d[,c(id,idv,dv, mdv, evid, c)]
+    out <- janitor::get_dupes(x)
+  }
+  if(is.null(c)) {
+    if(nrow(out)>0) {
+      warning(paste(nrow(out), " identical combinations of ", id, ", ", idv, ", ", dv, ", ", mdv, ", ", evid, " found in this dataset.", sep=""))
+    } else {
+      warning(paste("No identifical combinations of ", id, ", ", idv, ", ", dv, ", ", mdv, ", ", evid, " found in this dataset.", sep=""))
+    }
+  } else {
+    if(nrow(out)>0) {
+      warning(paste(nrow(out), " identical combinations of ", id, ", ", idv, ", ", dv, ", ", mdv, ", ", evid, ", ", c, " found in this dataset.", sep=""))
+    } else {
+      warning(paste("No identifical combinations of ", id, ", ", idv, ", ", dv, ", ", mdv, ", ", evid, ", ", c, " found in this dataset.", sep=""))
+    }
   }
   out
 

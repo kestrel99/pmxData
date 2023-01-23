@@ -11,7 +11,8 @@ check_dupes(
   idv = "TIME",
   dv = "DV",
   mdv = "MDV",
-  evid = "EVID"
+  evid = "EVID",
+  c = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ check_dupes(
 \item{mdv}{Missing variable identifier (defaults to "MDV").}
 
 \item{evid}{Event type identifier (defaults to "EVID").}
+
+\item{c}{Record censor identifier (defaults to \code{NULL}).}
 }
 \value{
 A tibble containing duplicates.

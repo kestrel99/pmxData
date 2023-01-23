@@ -38,6 +38,8 @@ check_doses <- function(d,
                         c="C",
                         sd_sens = 1) {
 
+  dropflag <- NULL
+
   pured <- d
 
   nid <- length(unique(d[[id]]))
@@ -46,6 +48,11 @@ check_doses <- function(d,
   . = NULL
 
   d$Rownum <- 1:nrow(d)
+
+  suppressWarnings(d[[idv]] <- as.numeric(as.character(d[[idv]])))
+  suppressWarnings(d[[dv]] <- as.numeric(as.character(d[[dv]])))
+  suppressWarnings(d[[amt]] <- as.numeric(as.character(d[[amt]])))
+  suppressWarnings(d[[rate]] <- as.numeric(as.character(d[[rate]])))
 
   ## nonzero conc, MDV=1
   dd <- d[d$dropped==0,]
@@ -94,15 +101,23 @@ check_doses <- function(d,
     obs <- x[x[[evid]]==0,]
     last_obs_time <- obs[[idv]][nrow(obs)]
     x$superfluous_dose <- 0
-    x$superfluous_dose[x[[idv]]>last_obs_time] <- 1
+    x$superfluous_dose[x[[idv]]>last_obs_time & x[[evid]]==1] <- 1
     x
+  }
+
+  dd$dropflag <- 0
+  if(!is.null(dd[[c]])) {
+    dd$cccc <- dd[[c]]
+    dd[[c]] <- as.character(dd[[c]])
+    dd$dropflag[grepl('^[A-Za-z]+$', dd[[c]])] <- 1
   }
 
   superfluous_doses <- dd %>%
     split(.[[id]]) %>%
     map_df(~ strip_doses(.)) %>%
     bind_rows %>%
-    filter(superfluous_dose==1)
+    filter(superfluous_dose==1) %>%
+    filter(dropflag==0)
 
   out <- list(
     dv_nonzero_mdv1 = dv_nonzero_mdv1,

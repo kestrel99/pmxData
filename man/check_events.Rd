@@ -4,7 +4,14 @@
 \alias{check_events}
 \title{Check and summarize the numbers and types of events in the dataset.}
 \usage{
-check_events(d, tool = "nonmem", id = "ID", evid = "EVID", c = "C")
+check_events(
+  d,
+  tool = "nonmem",
+  id = "ID",
+  evid = "EVID",
+  c = NULL,
+  mdv = NULL
+)
 }
 \arguments{
 \item{d}{The data file to be checked.}
@@ -16,9 +23,22 @@ check_events(d, tool = "nonmem", id = "ID", evid = "EVID", c = "C")
 \item{evid}{Event type identifier (defaults to "EVID").}
 
 \item{c}{Record censor identifier (defaults to "C").}
+
+\item{mdv}{Missing variable identifier (defaults to "MDV").}
 }
 \value{
 A tibble containing a summary of events in the dataset.
+\itemize{
+  \item \code{EVID}: Event ID (analogous to NONMEM: 0=observation, 1=dose, 2=other, 3=reset, 4=dose and reset)
+  \item \code{type}: Event type as text
+  \item \code{unique_id}: Number of unique subjects
+  \item \code{n}: Number of events
+  \item \code{perc}: Percentage made up by this type
+  \item \code{per_patient}: Number of rows of this type per patient
+  \item \code{dropped}: Number of rows of this type flagged for censoring
+  \item \code{dropped_perc}: Percentage of dropped rows in this type
+  \item \code{dropped_X} (as many columns as unique values of censoring codes): Numbers of dropped records by drop code
+}
 }
 \description{
 Check and summarize the numbers and types of events in the dataset.
